@@ -16,7 +16,7 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func TestListWithNoSort(t *testing.T) {
+func TestListWithFilter(t *testing.T) {
 	racingDB, _ := sql.Open("sqlite3", "./racing.db")
 	racesRepo := NewRacesRepo(racingDB)
 	if err := racesRepo.Init(); err != nil {
@@ -37,6 +37,32 @@ func TestListWithNoSort(t *testing.T) {
 	for _, race := range races {
 		if race.MeetingId != 10 || race.Visible != true {
 			t.Error("list func didn't apply appropriate filters")
+			return
+		}
+	}
+}
+
+func TestListWithSorting(t *testing.T) {
+	racingDB, _ := sql.Open("sqlite3", "./racing.db")
+	racesRepo := NewRacesRepo(racingDB)
+	if err := racesRepo.Init(); err != nil {
+		t.Errorf("error when initiating db, err: %s", err.Error())
+		return
+	}
+
+	sorting := racing.ListRacesRequestSorting{
+		SortBy:  1, // sort by ID
+		Descend: true,
+	}
+
+	races, err := racesRepo.List(nil, &sorting)
+	if err != nil {
+		t.Errorf("error when listing races, err: %s", err.Error())
+		return
+	}
+	for i := 0; i < len(races)-1; i++ {
+		if races[i].Id < races[i+1].Id {
+			t.Errorf("list func didn't apply appropriate sorting")
 			return
 		}
 	}
