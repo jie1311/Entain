@@ -178,9 +178,9 @@ func (m *racesRepo) scanRaces(rows *sql.Rows) ([]*racing.Race, error) {
 		race.AdvertisedStartTime = ts
 
 		if ts.AsTime().After(time.Now()) {
-			race.Status = 1 // OPEN
+			race.Status = racing.Status_OPEN
 		} else {
-			race.Status = 2 // CLOSED
+			race.Status = racing.Status_CLOSED
 		}
 
 		races = append(races, &race)
