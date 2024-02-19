@@ -35,8 +35,8 @@ func run() error {
 		return err
 	}
 
-	racesRepo := db.NewEventsRepo(sportDB)
-	if err := racesRepo.Init(); err != nil {
+	eventsRepo := db.NewEventsRepo(sportDB)
+	if err := eventsRepo.Init(); err != nil {
 		return err
 	}
 
@@ -45,7 +45,7 @@ func run() error {
 	sport.RegisterSportServer(
 		grpcServer,
 		service.NewsportService(
-			racesRepo,
+			eventsRepo,
 		),
 	)
 
