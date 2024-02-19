@@ -54,6 +54,8 @@ func (r *racesRepo) List(filter *racing.ListRacesRequestFilter) ([]*racing.Race,
 
 	query, args = r.applyFilter(query, filter)
 
+	query = r.applySort(query, "advertised_start_time")
+
 	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -89,6 +91,11 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 	}
 
 	return query, args
+}
+
+func (r *racesRepo) applySort(query string, filed string) string {
+	query += " ORDER BY " + filed
+	return query
 }
 
 func (m *racesRepo) scanRaces(
