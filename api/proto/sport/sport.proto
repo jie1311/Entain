@@ -1,0 +1,82 @@
+syntax = "proto3";
+package sport;
+
+option go_package = "/sport";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Sport {
+  // ListEvents will return a collection of all events.
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse) {
+    option (google.api.http) = { post: "/v1/list-events", body: "*" };
+  }
+}
+
+// only allow sorting for existing fileds
+enum SortBy {
+  UNSPECIFIED = 0;
+  ID = 1;
+  NAME = 2;
+  TYPE = 3;
+  LOCATION = 4;
+  VISIBLE = 5;
+  ADVERTISED_START_TIME = 6;
+}
+
+// only allow status to be open or closed
+enum Status {
+  UNKNOW = 0;
+  OPEN = 1;
+  CLOSED = 2;
+}
+
+/* Requests/Responses */
+
+// Request for ListEvents call.
+message ListEventsRequest {
+  ListEventsRequestFilter filter = 1;
+  ListEventsRequestSorting sorting = 2;
+}
+
+// Response to ListEvents call.
+message ListEventsResponse {
+  repeated Event events = 1;
+}
+
+// Filter for listing events.
+message ListEventsRequestFilter {
+  // When Visible Only set to true, sport only returns events when visible is true, 
+  // otherwise it returns all events that match other filter(s)
+  bool visible_only = 1;
+}
+
+// Sorting for listing events.
+message ListEventsRequestSorting {
+  // SortBy represents the field the event list is sorted by
+  SortBy sort_by = 1;
+  // Descend represents whether the list should be sorted in descend order
+  // default is false, aka the list would be sorted in aescend order
+  bool descend = 2;
+}
+
+/* Resources */
+
+// A event resource.
+message Event {
+  // ID represents a unique identifier for the event.
+  int64 id = 1;
+  // Name is the official name given to the event.
+  string name = 2;
+  // Type is the type of the event.
+  string type = 3;
+  // Location is the location where the event happens.
+  string location = 4;
+  // Visible represents whether or not the event is visible.
+  bool visible = 5;
+  // AdvertisedStartTime is the time the event is advertised to run.
+  google.protobuf.Timestamp advertised_start_time = 6;
+  // Satus represents whether the event is open or closed
+  Status status = 7;
+}
+
