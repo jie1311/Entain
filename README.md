@@ -125,15 +125,16 @@ It can be sorted by one of `ID`, `MEETING_ID` , `NAME` , `NUMBER` , `VISIBLE` an
 curl -X "POST" "http://localhost:8000/v1/list-races" \
      -H 'Content-Type: application/json' \
      -d $'{
-   "sorting":{"sort_by":"NAME"}
+   "sorting": {"sort_by": "NAME", "descend": true}
 }'
 ```
 
-- if there's no `sorting` object, or `sort_by` is set to `UNSPECIFIED`, it would by default sorted by `ADVERTISED_START_TIME`
+- if there's no `sorting` object, or `sort_by` is set to `UNSPECIFIED`, results would by default sorted by `ADVERTISED_START_TIME` in ascending order
+- bt default, results are ordered in ascending order, however, they can be ordered in decending order by adding `"descend": true` in the `sorting` object
 
-2. `GerRaces`
+2. `GetRaces`
 
-In a terminal window, call `GerRaces` for simply getting all race macted by `id`, `96` for example... 
+In a terminal window, call `GetRaces` for simply getting all race macted by `id`, `96` for example... 
 
 ```bash
 curl -X "GET" "http://localhost:8000/v1/get-race/96"
@@ -166,11 +167,12 @@ curl -X "POST" "http://localhost:8000/v1/list-events" \
 
 It can be sorted by one of `ID`, `NAME` , `TYPE` , `LOCATION` , `VISIBLE` and `ADVERTISED_START_TIME` (all caps)... 
 ```bash
-curl -X "POST" "http://localhost:8000/v1/list-races" \
+curl -X "POST" "http://localhost:8000/v1/list-events" \
      -H 'Content-Type: application/json' \
      -d $'{
    "sorting":{"sort_by":"NAME"}
 }'
 ```
 
-- if there's no `sorting` object, or `sort_by` is set to `UNSPECIFIED`, it would by default sorted by `ADVERTISED_START_TIME`
+- if there's no `sorting` object, or `sort_by` is set to `UNSPECIFIED`, results would by default sorted by `ADVERTISED_START_TIME` in ascending order
+- bt default, results are ordered in ascending order, however, they can be ordered in decending order by adding `"descend": true` in the `sorting` object
