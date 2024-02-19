@@ -134,6 +134,12 @@ func (m *racesRepo) scanRaces(
 
 		race.AdvertisedStartTime = ts
 
+		if ts.AsTime().After(time.Now()) {
+			race.Status = 1 // OPEN
+		} else {
+			race.Status = 2 // CLOSED
+		}
+
 		races = append(races, &race)
 	}
 
