@@ -11,8 +11,12 @@ service Racing {
   rpc ListRaces(ListRacesRequest) returns (ListRacesResponse) {
     option (google.api.http) = { post: "/v1/list-races", body: "*" };
   }
-}
 
+  // GetRace will return one race matched by id.
+  rpc GetRace(GetRaceRequest) returns (GetRaceResponse) {
+    option (google.api.http) = { get: "/v1/get-race/{id}" };
+  }
+}
 // only allow sorting for existing fileds
 enum SortBy {
   UNSPECIFIED = 0;
@@ -58,6 +62,16 @@ message ListRacesRequestSorting {
   // Descend represents whether the list should be sorted in descend order
   // default is false, aka the list would be sorted in aescend order
   bool descend = 2;
+}
+
+// Request for GetRace call.
+message GetRaceRequest {
+  int64 id = 1;
+}
+
+// Response to GetRace call.
+message GetRaceResponse {
+  Race race = 1;
 }
 
 /* Resources */

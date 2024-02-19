@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -19,6 +20,9 @@ type RacesRepo interface {
 
 	// List will return a list of races.
 	List(filter *racing.ListRacesRequestFilter, sort *racing.ListRacesRequestSorting) ([]*racing.Race, error)
+
+	// GetRace will return a race.
+	Get(id int64) (*racing.Race, error)
 }
 
 type racesRepo struct {
@@ -62,6 +66,37 @@ func (r *racesRepo) List(filter *racing.ListRacesRequestFilter, sorting *racing.
 	}
 
 	return r.scanRaces(rows)
+}
+
+func (r *racesRepo) Get(id int64) (*racing.Race, error) {
+	var (
+		err   error
+		query string
+		args  []interface{}
+	)
+
+	query = getRaceQueries()[racesList]
+	query, args = r.matchID(query, id)
+	rows, err := r.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	races, err := r.scanRaces(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(races) > 1 {
+		return nil, fmt.Errorf("sql: primary key search should not return more than one results, got %d results", len(races))
+	}
+
+	if len(races) == 0 {
+		return nil, nil
+	}
+
+	return races[0], nil
+
 }
 
 func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFilter) (string, []interface{}) {
@@ -110,9 +145,17 @@ func (r *racesRepo) applySort(query string, sorting *racing.ListRacesRequestSort
 	return query
 }
 
-func (m *racesRepo) scanRaces(
-	rows *sql.Rows,
-) ([]*racing.Race, error) {
+func (r *racesRepo) matchID(query string, id int64) (string, []interface{}) {
+	var args []interface{}
+
+	query += " WHERE id IS ?"
+
+	args = append(args, id)
+
+	return query, args
+}
+
+func (m *racesRepo) scanRaces(rows *sql.Rows) ([]*racing.Race, error) {
 	var races []*racing.Race
 
 	for rows.Next() {

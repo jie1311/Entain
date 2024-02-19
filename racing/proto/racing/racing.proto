@@ -8,6 +8,7 @@ import "google/protobuf/timestamp.proto";
 service Racing {
   // ListRaces will return a collection of all races.
   rpc ListRaces(ListRacesRequest) returns (ListRacesResponse) {}
+  rpc GetRace(GetRaceRequest) returns (GetRaceResponse) {}
 }
 
 // only allow sorting for existing fileds
@@ -56,6 +57,16 @@ message ListRacesRequestSorting {
   // Descend represents whether the list should be sorted in descend order
   // default is false, aka the list would be sorted in aescend order
   bool descend = 2;
+}
+
+// Request for GetRace call.
+message GetRaceRequest {
+  int64 id = 1;
+}
+
+// Response to GetRace call.
+message GetRaceResponse {
+  Race race = 1;
 }
 
 /* Resources */
