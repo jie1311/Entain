@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"testing"
+	"time"
 
 	"git.neds.sh/matty/entain/racing/proto/racing"
 )
@@ -13,6 +14,32 @@ func TestInit(t *testing.T) {
 
 	if err := racesRepo.Init(); err != nil {
 		t.Errorf("error when initiating db, err: %s", err.Error())
+	}
+}
+
+func TestList(t *testing.T) {
+	racingDB, _ := sql.Open("sqlite3", "./racing.db")
+	racesRepo := NewRacesRepo(racingDB)
+	if err := racesRepo.Init(); err != nil {
+		t.Errorf("error when initiating db, err: %s", err.Error())
+		return
+	}
+
+	races, err := racesRepo.List(nil, nil)
+	if err != nil {
+		t.Errorf("error when listing races, err: %s", err.Error())
+		return
+	}
+	if len(races) != 100 {
+		t.Errorf("list func failed to retrive all races, expected races: %d, got: %d", 100, len(races))
+		return
+	}
+	for _, race := range races {
+		if (race.AdvertisedStartTime.AsTime().After(time.Now()) && race.Status != racing.Status_OPEN) ||
+			(race.AdvertisedStartTime.AsTime().Before(time.Now()) && race.Status != racing.Status_CLOSED) {
+			t.Errorf("list func failed to populate status")
+			return
+		}
 	}
 }
 
@@ -36,7 +63,7 @@ func TestListWithFilter(t *testing.T) {
 	}
 	for _, race := range races {
 		if race.MeetingId != 10 || race.Visible != true {
-			t.Error("list func didn't apply appropriate filters")
+			t.Error("list func failed to apply appropriate filters")
 			return
 		}
 	}
@@ -62,7 +89,7 @@ func TestListWithSorting(t *testing.T) {
 	}
 	for i := 0; i < len(races)-1; i++ {
 		if races[i].Id < races[i+1].Id {
-			t.Errorf("list func didn't apply appropriate sorting")
+			t.Errorf("list func failed to apply appropriate sorting")
 			return
 		}
 	}
