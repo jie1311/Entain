@@ -124,9 +124,9 @@ func (m *eventsRepo) scanEvents(rows *sql.Rows) ([]*sport.Event, error) {
 		event.AdvertisedStartTime = ts
 
 		if ts.AsTime().After(time.Now()) {
-			event.Status = 1 // OPEN
+			event.Status = sport.Status_OPEN
 		} else {
-			event.Status = 2 // CLOSED
+			event.Status = sport.Status_CLOSED
 		}
 
 		events = append(events, &event)

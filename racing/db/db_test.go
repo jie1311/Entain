@@ -79,7 +79,7 @@ func TestListWithSorting(t *testing.T) {
 	}
 
 	sorting := racing.ListRacesRequestSorting{
-		SortBy:  1, // sort by ID
+		SortBy:  racing.SortBy_ID,
 		Descend: true,
 	}
 

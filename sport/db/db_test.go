@@ -77,7 +77,7 @@ func TestListWithSorting(t *testing.T) {
 	}
 
 	sorting := sport.ListEventsRequestSorting{
-		SortBy:  1, // sort by ID
+		SortBy:  sport.SortBy_ID,
 		Descend: true,
 	}
 
