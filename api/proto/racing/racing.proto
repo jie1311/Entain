@@ -13,11 +13,23 @@ service Racing {
   }
 }
 
+// only allow sorting for existing fileds
+enum SortBy {
+  UNSPECIFIED = 0;
+  ID = 1;
+  MEETING_ID = 2;
+  NAME = 3;
+  NUMBER = 4;
+  VISIBLE = 5;
+  ADVERTISED_START_TIME = 6;
+}
+
 /* Requests/Responses */
 
 // Request for ListRaces call.
 message ListRacesRequest {
   ListRacesRequestFilter filter = 1;
+  ListRacesRequestSorting sorting = 2;
 }
 
 // Response to ListRaces call.
@@ -30,6 +42,15 @@ message ListRacesRequestFilter {
   repeated int64 meeting_ids = 1;
   // Visible Only sends a filter request to racing to only return races when visible is true
   bool visible_only = 2;
+}
+
+// Sorting for listing races.
+message ListRacesRequestSorting {
+  // SortBy represents the field the race list is sorted by
+  SortBy sort_by = 1;
+  // Descend represents whether the list should be sorted in descend order
+  // default is false, aka the list would be sorted in aescend order
+  bool descend = 2;
 }
 
 /* Resources */
