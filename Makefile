@@ -12,4 +12,4 @@ run_sport:
 	cd sport && go build && ./sport &
 
 stop_all: 
-	chomd +x stop_all.sh && ./stop_all.sh
+	chmod +x stop_all.sh && ./stop_all.sh
