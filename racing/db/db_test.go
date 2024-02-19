@@ -16,7 +16,7 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func TestList(t *testing.T) {
+func TestListWithNoSort(t *testing.T) {
 	racingDB, _ := sql.Open("sqlite3", "./racing.db")
 	racesRepo := NewRacesRepo(racingDB)
 	if err := racesRepo.Init(); err != nil {
@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 		VisibleOnly: true,
 	}
 
-	races, err := racesRepo.List(&filter)
+	races, err := racesRepo.List(&filter, nil)
 	if err != nil {
 		t.Errorf("error when listing races, err: %s", err.Error())
 		return

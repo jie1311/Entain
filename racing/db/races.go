@@ -18,7 +18,7 @@ type RacesRepo interface {
 	Init() error
 
 	// List will return a list of races.
-	List(filter *racing.ListRacesRequestFilter) ([]*racing.Race, error)
+	List(filter *racing.ListRacesRequestFilter, sort *racing.ListRacesRequestSorting) ([]*racing.Race, error)
 }
 
 type racesRepo struct {
@@ -43,7 +43,7 @@ func (r *racesRepo) Init() error {
 	return err
 }
 
-func (r *racesRepo) List(filter *racing.ListRacesRequestFilter) ([]*racing.Race, error) {
+func (r *racesRepo) List(filter *racing.ListRacesRequestFilter, sorting *racing.ListRacesRequestSorting) ([]*racing.Race, error) {
 	var (
 		err   error
 		query string
@@ -54,7 +54,7 @@ func (r *racesRepo) List(filter *racing.ListRacesRequestFilter) ([]*racing.Race,
 
 	query, args = r.applyFilter(query, filter)
 
-	query = r.applySort(query, "advertised_start_time")
+	query = r.applySort(query, sorting)
 
 	rows, err := r.db.Query(query, args...)
 	if err != nil {
@@ -93,8 +93,20 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 	return query, args
 }
 
-func (r *racesRepo) applySort(query string, filed string) string {
-	query += " ORDER BY " + filed
+func (r *racesRepo) applySort(query string, sorting *racing.ListRacesRequestSorting) string {
+	// default behavior when sorting is not provided or sort_by is unspecified
+	if sorting == nil || sorting.SortBy == 0 {
+		sorting = &racing.ListRacesRequestSorting{
+			SortBy: 6, // set default to ADVERTISED_START_TIME
+		}
+	}
+
+	query += " ORDER BY " + sorting.SortBy.String()
+
+	if sorting.Descend {
+		query += " DESC "
+	}
+
 	return query
 }
 
